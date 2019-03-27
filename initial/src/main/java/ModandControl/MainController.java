@@ -3,13 +3,16 @@ package ModandControl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import org.hibernate.exception.DataException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.util.Optional;
 
 @Controller    // This means that this class is a Controller
@@ -34,26 +37,27 @@ public class MainController {
 	        return "ModandControl/Board" +board1.getId()+ " has been created, toggle to /board to add shapes";
         }
 
+        @GetMapping("/board/getShapes")
+        public @ResponseBody String getCurrentShapes(){
+	        Optional<Board> getboard=boardRepository.findById(1);
+	        if(getboard.isPresent()){
+	            return getboard.get().stringfyShapes();
+            }
+	        else
+                return "";
+        }
 
         @GetMapping("/board")
-        public @ResponseBody String showBoard(){
+        public @ResponseBody ModelAndView showBoard(){
 	        Optional<Board> getboard=boardRepository.findById(1);
-            Model mdl=new ModelAndView("/painter/board");
-            String str;
+            ModelAndView mdl=new ModelAndView("board");
 	        if(getboard.isPresent()){
 	            Board myboard=getboard.get();
-	            ObjectWriter ow= new ObjectMapper().writer().withDefaultPrettyPrinter();
-	            try {
-                    return ow.writeValueAsString(myboard);
-                }catch(JsonProcessingException e){
-	                str="Problem with JSON";
-	                mdl.addAttribute("str",str);
-	                return "board";
-                }
+	                mdl.addObject("board",myboard);
+	                return mdl;
             }
-	        str="Not Present";
-	        mdl.addAttribute("str",str);
-	        return "board";
+	        else
+                return mdl;
         }
 
         //TODO: Add inside the RequestParamter , x , y , size and shape and link it to the HTML page with ${}
@@ -113,3 +117,7 @@ public class MainController {
 
 
 	}
+
+	//<svg width="80" height="80">
+//    <circle cx="40" cy="40" r="30" stroke="#000" stroke-width="1" fill="#FFF" />
+//</svg>

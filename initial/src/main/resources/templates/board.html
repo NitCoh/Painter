@@ -5,8 +5,56 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 
 </head>
-<body>
-<canvas id="tutorial" width="300" height="150"></canvas>
-<p th:text="'Incoming message from server : ' + ${str} + '!'" />
+<body onload="requestingShapes();">
+<script>
+    function requestingShapes() {
+        var xmlhttp = new XMLHttpRequest();
+        var url = "http://localhost:8080/painter/board/getShapes";
+        xmlhttp.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                var myList = JSON.parse(this.responseText);
+                draw(myList);
+            }
+        };
+        xmlhttp.open("GET", url, true);
+        xmlhttp.send();
+    }
+
+    function draw(arr) {
+        var i;
+        var canvas = document.getElementById('canvas');
+        if (canvas.getContext) {
+            var context = canvas.getContext('2d');
+            for (i = 0; i < arr.length; i++) {
+                var shape=arr[i];
+                console.log(shape.name);
+                if(shape.name==="Square"){
+                     context.rect(shape.centerX,shape.centerY,shape.size,shape.size);
+                     context.stroke();
+                }
+                else if(shape.name==="Circle"){
+                    context.beginPath();
+                    context.arc(shape.centerX, shape.centerY, shape.radius, 0, 2 * Math.PI);
+                    context.stroke();
+                }
+                else if(shape.name==="Triangle"){
+                    context.beginPath();
+                    context.moveTo(100, 100);
+                    context.lineTo(100, 300);
+                    context.lineTo(300, 300);
+                    context.closePath();
+                    context.lineWidth = 10;
+                    context.strokeStyle = '#666666';
+                    context.stroke();
+                }
+            }
+        }
+    }
+
+</script>
+<canvas id="canvas" width="1000" height="1000"></canvas>
+<p th:text="${board.stringfyShapes()}"></p>
 </body>
 </html>
+
+

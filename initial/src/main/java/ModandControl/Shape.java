@@ -14,6 +14,7 @@ public abstract class Shape {
 
     private Integer centerY;
 
+
     public Integer getCenterX() {
         return centerX;
     }

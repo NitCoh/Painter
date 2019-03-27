@@ -1,5 +1,10 @@
 
 package ModandControl;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.databind.SerializationFeature;
+
 import javax.persistence.*;
 
 import java.io.Serializable;
@@ -59,6 +64,21 @@ public class Board implements Serializable {
             return false;
         else
             return null;
+    }
+
+    /**
+     * @return JSON of current board shapes.
+      */
+    public String stringfyShapes(){
+        String toRet;
+        ObjectMapper ow= new ObjectMapper();
+        ow.enable(SerializationFeature.INDENT_OUTPUT);
+        try{
+            toRet=ow.writeValueAsString(shapes);
+        }catch(JsonProcessingException e){
+            toRet="Bad shapes Conversion";
+        }
+        return toRet;
     }
 
     public Integer getId() {
