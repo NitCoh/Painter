@@ -3,57 +3,162 @@
 <head>
     <title>ModandControl.Board</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <script>
 
-</head>
-<body onload="requestingShapes();">
-<script>
-    function requestingShapes() {
-        var xmlhttp = new XMLHttpRequest();
-        var url = "http://localhost:8080/painter/board/getShapes";
-        xmlhttp.onreadystatechange = function () {
-            if (this.readyState == 4 && this.status == 200) {
-                var myList = JSON.parse(this.responseText);
-                draw(myList);
+        function mainNavigator(){
+            requestingShapes();
+            printOptions(800,"X-Coordinate");
+            printOptions(500,"Y-Coordinate");
+            printOptions(300,"Size");
+        }
+
+        function onclickAction(){
+            var name=document.getElementById("Shape").value;
+            var x = document.getElementById("X-Coordinate").value;
+            var y = document.getElementById("Y-Coordinate").value;
+            var size = document.getElementById("Size").value;
+            var shape;
+            console.log(name,x,y,size);
+            if(name==="Circle")
+                shape= {x:x,y:y,radius:size,name:name};
+            else
+                shape= {x:x,y:y,size:size,name:name};
+            createShape(shape);
+            refreshOnClick();
+
+        }
+        function putListinSelect(list){
+            var select = document.getElementById("shapes")
+            for(var i=0; i<list.length;i++){
+                select.options[select.options.length] = new Option(JSON.stringify(list[i]), JSON.stringify(list[i]));
             }
-        };
-        xmlhttp.open("GET", url, true);
-        xmlhttp.send();
-    }
+        }
+        function printOptions(amount,tagName){
+            var select = document.getElementById(tagName);
+            for (var i = 1; i <= amount; i++){
+                select.options[select.options.length] = new Option(i, i);
+            }
+        }
+        function createShape(shape){
+            xmlhttp = new XMLHttpRequest();
+            xmlhttp.open("POST", "http://localhost:8080/painter/board/boardAddShapeTest", true);
+            xmlhttp.onreadystatechange = function () { //Call a function when the state changes.
+                if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+                }
+            };
+            xmlhttp.send(JSON.stringify(shape));
+        }
+        function requestingShapes() {
+            var xmlhttp = new XMLHttpRequest();
+            var url = "http://localhost:8080/painter/board/getShapes";
+            xmlhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    var myList = JSON.parse(this.responseText);
+                    draw(myList);
+                    putListinSelect(myList);
+                }
+            };
+            xmlhttp.open("GET", url, true);
+            xmlhttp.send();
+        }
+        function deleteShape(){
+            var stringifiedObj=document.getElementById("shapes").value;
+            deleteReq(stringifiedObj);
+            refreshOnClick();
+        }
+        function deleteReq(shape){
+            xmlhttp = new XMLHttpRequest();
+            xmlhttp.open("DELETE", "http://localhost:8080/painter/board/deleteShape", true);
+            xmlhttp.onreadystatechange = function () { //Call a function when the state changes.
+                if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+                }
+            };
+            xmlhttp.send(shape);
+        }
+        function refreshOnClick(){
+            requestingShapes();
+            window.location.reload();
+        }
 
-    function draw(arr) {
-        var i;
-        var canvas = document.getElementById('canvas');
-        if (canvas.getContext) {
-            var context = canvas.getContext('2d');
-            for (i = 0; i < arr.length; i++) {
-                var shape=arr[i];
-                console.log(shape.name);
-                if(shape.name==="Square"){
-                     context.rect(shape.centerX,shape.centerY,shape.size,shape.size);
-                     context.stroke();
-                }
-                else if(shape.name==="Circle"){
-                    context.beginPath();
-                    context.arc(shape.centerX, shape.centerY, shape.radius, 0, 2 * Math.PI);
-                    context.stroke();
-                }
-                else if(shape.name==="Triangle"){
-                    context.beginPath();
-                    context.moveTo(100, 100);
-                    context.lineTo(100, 300);
-                    context.lineTo(300, 300);
-                    context.closePath();
-                    context.lineWidth = 10;
-                    context.strokeStyle = '#666666';
-                    context.stroke();
+        function draw(arr) {
+            var i;
+            var canvas = document.getElementById('canvas');
+            if (canvas.getContext) {
+                var context = canvas.getContext('2d');
+                for (i = 0; i < arr.length; i++) {
+                    var shape=arr[i];
+                    if(shape.name==="Square"){
+                        context.rect(shape.x,shape.y,shape.size,shape.size);
+                        context.stroke();
+                    }
+                    else if(shape.name==="Circle"){
+                        context.beginPath();
+                        context.arc(shape.x, shape.y, shape.radius, 0, 2 * Math.PI);
+                        context.stroke();
+                    }
+                    else if(shape.name==="Triangle"){
+                        context.beginPath();
+                        context.moveTo(shape.x, shape.y);
+                        context.lineTo(shape.x, shape.y+shape.size);
+                        context.lineTo(shape.x+shape.size, shape.y+shape.size);
+                        context.closePath();
+                        context.lineWidth = 10;
+                        context.strokeStyle = '#666666';
+                        context.stroke();
+                    }
                 }
             }
         }
-    }
 
-</script>
-<canvas id="canvas" width="1000" height="1000"></canvas>
-<p th:text="${board.stringfyShapes()}"></p>
+    </script>
+</head>
+<body onload="mainNavigator();">
+<table>
+    <tr>
+        <td>Shape:</td>
+        <td><select id="Shape">
+            <option value="Triangle">Triangle</option>
+            <option value="Circle">Circle</option>
+            <option value="Square">Square</option>
+        </select></td>
+    </tr>
+</table>
+<table>
+    <tr>
+        <td>X-Coordinate:</td>
+        <td><select id="X-Coordinate"></select></td>
+    </tr>
+</table>
+<table>
+    <tr>
+        <td>Y-Coordinate:</td>
+        <td><select id="Y-Coordinate"></select></td>
+    </tr>
+</table>
+<table>
+    <tr>
+        <td>Size:</td>
+        <td><select id="Size"></select></td>
+    </tr>
+</table>
+<table>
+    <tr>
+        <td><input id="creator" type="submit" value="Create" onclick="onclickAction()"/></td>
+    </tr>
+</table>
+<table>
+    <tr>
+        <td>Current Shapes:</td>
+        <td><select id="shapes" ></select></td>
+    </tr>
+</table>
+<table>
+    <tr>
+        <td><input id="deletor" type="submit" value="Delete" onclick="deleteShape()"/></td>
+    </tr>
+</table>
+<canvas id="canvas" width="1000" height="500" style="border:1px solid black"></canvas>
+<p th:text="${board.stringfyShapes()}" hidden="true"></p>
 </body>
 </html>
 

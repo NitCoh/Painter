@@ -13,6 +13,7 @@ public class Circle extends Shape {
         return radius;
     }
     public String getName(){return name;}
+    public void setName(String name){}; //Used for auto-deserialization
 
     public void setRadius(Integer radius) {
         this.radius = radius;

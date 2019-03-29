@@ -12,7 +12,7 @@ public class Triangle extends Shape {
     public Integer getSize() {
         return size;
     }
-
+    public void setName(String name){}; //Used for auto-deserialization
     public String getName(){return name;}
 
     public void setSize(Integer size) {

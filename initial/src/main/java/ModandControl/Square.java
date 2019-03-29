@@ -14,6 +14,7 @@ public class Square extends Shape {
     }
 
     public String getName(){return name;}
+    public void setName(String name){}; //Used for auto-deserialization
 
     public void setSize(Integer size) {
         this.size = size;
