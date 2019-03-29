@@ -10,25 +10,17 @@ public abstract class Shape {
     @GeneratedValue
     private Integer Id;
 
-    private Integer centerX;
+    private Integer x;
 
-    private Integer centerY;
+    private Integer y;
 
-    public Integer getCenterX() {
-        return centerX;
-    }
+    public Integer getX(){return x;}
 
-    public Integer getCenterY() {
-        return centerY;
-    }
+    public void setX(Integer x){this.x=x;}
 
-    public void setCenterX(Integer centerX) {
-        this.centerX = centerX;
-    }
+    public Integer getY(){return y;}
 
-    public void setCenterY(Integer centerY) {
-        this.centerY = centerY;
-    }
+    public void setY(Integer x){this.y=x;}
 
     public Integer getId() {
         return Id;
