@@ -100,9 +100,9 @@ public class Board implements Serializable {
      * @return True if success, False if not contains @shape else NULL if @shape isn't valid.
      */
     public Boolean removeShape(Shape shape,User user){
-        if(shape !=null && containsNRemoveById(shape.getId()) && user.getIp().equals(admin.getIp())
-        && shapesCounter.get(user.getIp())>=0) {
-            shapesCounter.put(user.getIp(),shapesCounter.get(user.getIp())-1);
+        if(shape !=null && user.getIp().equals(admin.getIp()) && containsNRemoveById(shape.getId())) {
+            if(shapesCounter.get(user.getIp())>0)
+                shapesCounter.put(user.getIp(),shapesCounter.get(user.getIp())-1);
             board[shape.getX()][shape.getY()]=0;
             return true;
         }

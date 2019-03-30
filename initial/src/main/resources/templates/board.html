@@ -4,12 +4,15 @@
     <title>ModandControl.Board</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <script>
-
         function mainNavigator(){
-            requestingShapes();
+            reloading();
             printOptions(800,"X-Coordinate");
             printOptions(500,"Y-Coordinate");
             printOptions(300,"Size");
+        }
+        function reloading(){
+            requestingShapes();
+            setInterval(requestingShapes,3000);
         }
 
         function onclickAction(){
@@ -28,7 +31,8 @@
 
         }
         function putListinSelect(list){
-            var select = document.getElementById("shapes")
+            var select = document.getElementById("shapes");
+            document.getElementById("shapes").innerHTML = "";
             for(var i=0; i<list.length;i++){
                 select.options[select.options.length] = new Option(JSON.stringify(list[i]), JSON.stringify(list[i]));
             }
@@ -41,7 +45,7 @@
         }
         function createShape(shape){
             xmlhttp = new XMLHttpRequest();
-            xmlhttp.open("POST", "http://localhost:8080/painter/board/boardAddShapeTest", true);
+            xmlhttp.open("POST", "http://10.100.102.17:8080/painter/board/boardAddShape", true);
             xmlhttp.onreadystatechange = function () { //Call a function when the state changes.
                 if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
                 }
@@ -49,8 +53,9 @@
             xmlhttp.send(JSON.stringify(shape));
         }
         function requestingShapes() {
+            console.log("requesting shapes");
             var xmlhttp = new XMLHttpRequest();
-            var url = "http://localhost:8080/painter/board/getShapes";
+            var url = "http://10.100.102.17:8080/painter/board/getShapes";
             xmlhttp.onreadystatechange = function () {
                 if (this.readyState == 4 && this.status == 200) {
                     var myList = JSON.parse(this.responseText);
@@ -68,7 +73,7 @@
         }
         function deleteReq(shape){
             xmlhttp = new XMLHttpRequest();
-            xmlhttp.open("DELETE", "http://localhost:8080/painter/board/deleteShape", true);
+            xmlhttp.open("DELETE", "http://10.100.102.17:8080/painter/board/deleteShape", true);
             xmlhttp.onreadystatechange = function () { //Call a function when the state changes.
                 if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
                 }
@@ -85,6 +90,7 @@
             var canvas = document.getElementById('canvas');
             if (canvas.getContext) {
                 var context = canvas.getContext('2d');
+                context.clearRect(0,0,context.canvas.width,context.canvas.height);
                 for (i = 0; i < arr.length; i++) {
                     var shape=arr[i];
                     if(shape.name==="Square"){
@@ -157,7 +163,7 @@
         <td><input id="deletor" type="submit" value="Delete" onclick="deleteShape()"/></td>
     </tr>
 </table>
-<canvas id="canvas" width="1000" height="500" style="border:1px solid black"></canvas>
+<canvas id="canvas" width="800" height="500" style="border:1px solid black"></canvas>
 <p th:text="${board.stringfyShapes()}" hidden="true"></p>
 </body>
 </html>
