@@ -1,4 +1,7 @@
 # Painter
+Configure server IP:
+1)toggle to board.html
+2)change to host server IP all the AJAX requests.
 
 Configure DB:
 1) Enter path : Painter/initial/src/main/resources/application.properties
